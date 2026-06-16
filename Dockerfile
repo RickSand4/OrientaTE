@@ -18,4 +18,4 @@ EXPOSE 8000
 
 # Comando para ejecutar tu API
 # Usamos 'api:app' como me indicaste anteriormente
-CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD uvicorn api:app --host 0.0.0.0 --port ${PORT:-8000}
