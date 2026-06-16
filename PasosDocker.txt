@@ -1,0 +1,38 @@
+*El archivo contiene los pasos de los comandos a seguir para crear el contenedor del programa, ejecutarlo y detenerlo
+NOTA: Para esto hay que tener instalado y haber iniciado Docker Desktop
+1.Para crear el contenedor por primera vez:
+    a. Dentro de la carpeta del proyecto (por ejemplo: "C:\Users\user1\Desktop\proyecto\IA\chatVocacional_2"), abrir una terminal "cmd"
+    b. Ejecutar el comando: docker compose up --build
+    NOTA:EN CASO DE DE UN ERROR EL COMANDO DE DOCKER, VERIFICAR SU INSTALACION Y QUE SE HAYA INICIADO EL PROGRAMA Docker Desktop
+    c. Después de ejecutar el comando de la sección b, la ventana cmd muestra algo como:
+        -Attaching to api-1
+        - api-1  | INFO:     Will watch for changes in these directories: ['/app']
+        - api-1  | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+        - api-1  | INFO:     Started reloader process [1] using WatchFiles
+        - api-1  | INFO:     Started server process [8]
+        - api-1  | INFO:     Waiting for application startup.
+        - api-1  | INFO:     Application startup complete.
+    d. Ya se puede ingresar desde un navegador a: http://localhost:8000
+    e. Para detener (bajar el contenedor), desde la misma ventana cmd pulsas las teclas "CTRL+C" y es necesario ejecutar el comando: 
+        docker compose down, o bien lo puedes detener desde el programa Docker  Desktop, en la sección Containers y le das en el boton 
+        detener en el contenedor "chatvocacional_2".
+2. Si anteriormente ya creaste el contenedor, solo es necesario lo siguiente:
+    a. Dentro de la carpeta del proyecto (por ejemplo: "C:\Users\user1\Desktop\proyecto\IA\chatVocacional_2"), abrir una terminal "cmd"
+        y ejecutar el comando (para levantar el contenedor): docker compose up
+        O bien desde el programa Docker Desktop, en la seccion de Containers, le das click en el boton iniciar contenedor en el contenedor: chatvocacional_2
+    b. Después de ejecutar el comando de la sección b, la ventana cmd muestra algo como:
+        - [+] Running 2/2
+        - ✔ Network chatvocacional_2_default  Created                                                                       0.0s
+        - ✔ Container chatvocacional_2-api-1  Created                                                                       0.1s
+        - Attaching to api-1
+        - api-1  | INFO:     Will watch for changes in these directories: ['/app']
+        - api-1  | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+        - api-1  | INFO:     Started reloader process [1] using WatchFiles
+        - api-1  | INFO:     Started server process [8]
+        - api-1  | INFO:     Waiting for application startup.
+        - api-1  | INFO:     Application startup complete.
+    c. Ya se puede ingresar desde un navegador a: http://localhost:8000
+    d. Para detener (bajar el contenedor), desde la misma ventana cmd pulsas las teclas "CTRL+C" y es necesario 
+        ejecutar el comando: docker compose down
+        O bien lo puedes detener desde el programa Docker  Desktop, en la sección Containers y le das en el boton 
+        detener en el contenedor "chatvocacional_2".

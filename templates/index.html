@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>OrientaTE · UPIIZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+/* ── tokens (Temas Claro y Oscuro) ──────────────────────────── */
+:root {
+  /* TEMA CLARO (Default) */
+  --bg:        #F4F6F8;
+  --surface:   #FFFFFF;
+  --card:      #FFFFFF;
+  --border:    #E2E8F0;
+  --text:      #1E293B;
+  --muted:     #64748B;
+  --danger:    #EF4444;
+  
+  /* IDENTIDAD IPN: Guinda y Dorado */
+  --accent-rgb:  109, 36, 62;    /* #6D243E */
+  --accent2-rgb: 221, 167, 59;   /* #DDA73B */
+  --accent:      rgb(var(--accent-rgb));
+  --accent2:     rgb(var(--accent2-rgb));
+  
+  --radius:    14px;
+  --mono:      'Space Mono', monospace;
+  --sans:      'Space Grotesk', sans-serif;
+}
+
+[data-theme="dark"] {
+  /* TEMA OSCURO */
+  --bg:        #0B0F1A;
+  --surface:   #121828;
+  --card:      #1A2236;
+  --border:    #253047;
+  --text:      #E8EDF5;
+  --muted:     #8F9FB8;
+  
+  /* Guinda adaptado para alto contraste en pantallas oscuras */
+  --accent-rgb:  204, 61, 107;   /* #CC3D6B */
+  --accent2-rgb: 245, 192, 86;   /* #F5C056 */
+  --accent:      rgb(var(--accent-rgb));
+  --accent2:     rgb(var(--accent2-rgb));
+}
+
+/* ── reset ──────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* ── header ─────────────────────────────────────────────────── */
+header {
+  width: 100%;
+  padding: 28px 40px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--border);
+  transition: border-color 0.3s ease;
+}
+.logo-badge {
+  background: var(--accent);
+  color: #FFFFFF;
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: .12em;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+.logo-text { font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
+.logo-text span { color: var(--accent); }
+.header-sub { margin-left: auto; font-size: 12px; color: var(--muted); font-family: var(--mono); }
+
+/* Botón de Tema */
+.theme-toggle {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: 12px;
+}
+.theme-toggle:hover {
+  background: rgba(var(--accent-rgb), 0.1);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.theme-toggle svg { width: 18px; height: 18px; fill: currentColor; }
+#icon-sun { display: none; }
+[data-theme="dark"] #icon-sun { display: block; }
+[data-theme="dark"] #icon-moon { display: none; }
+
+/* ── main wrapper ───────────────────────────────────────────── */
+main {
+  width: 100%;
+  max-width: 780px;
+  padding: 40px 24px 80px;
+  flex: 1;
+}
+
+/* ── step system ────────────────────────────────────────────── */
+.step { display: none; }
+.step.active { display: block; }
+
+/* ── hero ───────────────────────────────────────────────────── */
+.hero {
+  text-align: center;
+  padding: 48px 0 56px;
+}
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .18em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-size: clamp(32px, 6vw, 54px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -.03em;
+  margin-bottom: 20px;
+}
+.hero h1 em { font-style: normal; color: var(--accent2); }
+.hero p {
+  color: var(--muted);
+  font-size: 16px;
+  max-width: 500px;
+  margin: 0 auto 40px;
+  line-height: 1.7;
+}
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--accent);
+  color: #FFFFFF;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 15px;
+  padding: 14px 32px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(var(--accent-rgb), 0.35); }
+.btn-primary:active { transform: none; }
+
+/* ── progress bar ───────────────────────────────────────────── */
+.progress-wrap {
+  margin-bottom: 24px;
+}
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.progress-track {
+  height: 3px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border-radius: 999px;
+  transition: width .4s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── interfaz chatbot ───────────────────────────────────────── */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 60vh;
+  min-height: 450px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+.chat-history {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scroll-behavior: smooth;
+}
+
+/* Burbujas de chat */
+.msg-bot {
+  align-self: flex-start;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px 16px 16px 4px;
+  padding: 14px 18px;
+  max-width: 85%;
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.5;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.msg-bot-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--accent);
+  margin-bottom: 6px;
+  display: block;
+  letter-spacing: 0.05em;
+}
+.msg-user {
+  align-self: flex-end;
+  background: var(--accent);
+  color: #FFFFFF;
+  border-radius: 16px 16px 4px 16px;
+  padding: 12px 18px;
+  max-width: 75%;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.2);
+}
+
+/* Controles inferiores del chat */
+.chat-controls {
+  padding: 20px;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  min-height: 115px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+.q-scale {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.q-btn {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 6px 10px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s, transform .1s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.q-btn:hover { 
+  border-color: var(--accent); 
+  background: rgba(var(--accent-rgb), 0.06); 
+}
+.q-val {
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+.q-desc {
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* ── loading ────────────────────────────────────────────────── */
+#step-loading {
+  text-align: center;
+  padding: 80px 0;
+}
+.spinner {
+  width: 48px; height: 48px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  margin: 0 auto 28px;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-msg { color: var(--muted); font-size: 15px; }
+
+/* ── results ────────────────────────────────────────────────── */
+#step-results { padding-top: 8px; }
+.result-eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .16em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.result-title {
+  font-size: clamp(24px, 5vw, 38px);
+  font-weight: 700;
+  letter-spacing: -.025em;
+  margin-bottom: 8px;
+  line-height: 1.15;
+}
+.result-subtitle { color: var(--muted); font-size: 15px; margin-bottom: 36px; }
+
+.winner-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.winner-card {
+  flex: 1 1 200px;
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.08), rgba(var(--accent-rgb), 0.02));
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+}
+.winner-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .14em;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.winner-name { font-size: 17px; font-weight: 600; line-height: 1.3; }
+
+.consejo-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent2);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  margin-bottom: 36px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+.consejo-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .14em;
+  color: var(--accent2);
+  margin-bottom: 10px;
+}
+
+/* ── score chart ────────────────────────────────────────────── */
+.chart-section-title {
+  text-align: center; 
+  margin-bottom: 10px; 
+  color: var(--muted); 
+  font-weight: 600; 
+  font-size: 13px; 
+  letter-spacing: 0.08em; 
+  text-transform: uppercase;
+}
+.scores-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 16px;
+}
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+.score-label { font-size: 13px; min-width: 240px; color: var(--text); }
+.score-track {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.score-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border-radius: 999px;
+  width: 0;
+  transition: width .8s cubic-bezier(.4,0,.2,1);
+}
+.score-val {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--accent);
+  min-width: 36px;
+  text-align: right;
+}
+
+.btn-restart {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 36px;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 14px;
+  padding: 12px 24px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.btn-restart:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── footer ─────────────────────────────────────────────────── */
+footer {
+  width: 100%;
+  padding: 20px 40px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: .06em;
+  transition: border-color 0.3s ease;
+}
+
+/* ── responsive ─────────────────────────────────────────────── */
+@media (max-width: 560px) {
+  header { padding: 20px; }
+  .header-sub { display: none; }
+  .q-scale { grid-template-columns: repeat(5, 1fr); gap: 4px; }
+  .q-btn { padding: 10px 2px 8px; }
+  .q-val { font-size: 15px; }
+  .score-label { min-width: 140px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="logo-badge">UPIIZ</span>
+  <span class="logo-text">Orienta<span>TE</span></span>
+  <span class="header-sub">Sistema Experto Vocacional v2.0</span>
+  
+  <button id="theme-toggle" class="theme-toggle" aria-label="Cambiar tema">
+    <svg id="icon-moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+    </svg>
+    <svg id="icon-sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </button>
+</header>
+
+<main>
+
+  <div id="step-home" class="step active">
+    <div class="hero">
+      <p class="hero-eyebrow">Diagnóstico vocacional inteligente</p>
+      <h1>Descubre tu carrera <em>ideal</em> en UPIIZ</h1>
+      <p>Responde las preguntas sobre tus intereses y habilidades. Nuestro motor de inferencia analizará tu perfil y te orientará hacia la ingeniería que mejor se adapta a ti.</p>
+      <button class="btn-primary" id="btn-start">
+        <span>Iniciar diagnóstico conversacional</span>
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="step-quiz" class="step">
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="prog-label">Progreso del diagnóstico</span>
+        <span id="prog-pct">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+    
+    <div class="chat-container">
+      <div id="chat-history" class="chat-history"></div>
+      
+      <div id="chat-controls" class="chat-controls">
+        <div class="q-scale" id="answer-buttons">
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="step-loading" class="step">
+    <div class="spinner"></div>
+    <p class="loading-msg">Evaluando tu perfil con el motor de inferencia…</p>
+  </div>
+
+  <div id="step-results" class="step">
+    <p class="result-eyebrow">Diagnóstico completado</p>
+    <h2 class="result-title" id="res-title"></h2>
+    <p class="result-subtitle" id="res-subtitle"></p>
+    <div class="winner-cards" id="winner-cards"></div>
+    <div class="consejo-box" id="consejo-box" style="display:none">
+      <div class="consejo-label">▲ RETROALIMENTACIÓN PERSONALIZADA</div>
+      <p id="consejo-text"></p>
+    </div>
+
+    <div class="chart-section-title">Gráfica de perfil vocacional</div>
+    <div style="position: relative; height: 350px; width: 100%; max-width: 500px; margin: 0 auto 36px;">
+      <canvas id="radarChart"></canvas>
+    </div>
+
+    <div class="scores-title">Puntaje por carrera</div>
+    <div id="score-bars"></div>
+    <button class="btn-restart" id="btn-restart">↺ &nbsp;Reiniciar diagnóstico</button>
+  </div>
+
+</main>
+
+<footer>OrientaTE · UPIIZ · Sistema Experto Vocacional &nbsp;·&nbsp; Todos los derechos reservados</footer>
+
+<script>
+// ── control del tema claro / oscuro ───────────────────────────────────────
+const themeToggle = document.getElementById('theme-toggle');
+const rootElement = document.documentElement;
+
+const savedTheme = localStorage.getItem('theme');
+const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+  rootElement.setAttribute('data-theme', 'dark');
+} else {
+  rootElement.setAttribute('data-theme', 'light');
+}
+
+themeToggle.addEventListener('click', () => {
+  const currentTheme = rootElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  
+  rootElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  
+  // Si el gráfico de radar ya se inicializó, redibujarlo con los nuevos colores de tema
+  if (radarChartInstance && window.currentRadarData) {
+    renderRadarChart(window.currentRadarData.carreras, window.currentRadarData.puntajes);
+  }
+});
+
+// ── estado global ─────────────────────────────────────────────────────────
+const state = {
+  preguntas: [],
+  tronco:    [],
+  escala:    {},
+  cursor:    0,
+  respuestas: {}, 
+  total: 0,
+};
+
+// ── helpers ───────────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+
+function showStep(id) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+}
+
+// ── 1. Nuevo appendMessage con efecto de escritura ajustado ───────────────
+function appendMessage(text, sender, title = '') {
+  return new Promise((resolve) => {
+    const chatHistory = $('chat-history');
+    const msgDiv = document.createElement('div');
+    msgDiv.className = sender === 'bot' ? 'msg-bot' : 'msg-user';
+    chatHistory.appendChild(msgDiv);
+
+    if (sender === 'bot') {
+      let fullHTML = title ? `<span class="msg-bot-title">${title}</span>${text}` : text;
+      let i = 0;
+      let isTag = false;
+      let currentHTML = "";
+
+      function typeWriter() {
+        if (i < fullHTML.length) {
+          let char = fullHTML.charAt(i);
+          currentHTML += char;
+          
+          if (char === '<') isTag = true;
+          if (char === '>') isTag = false;
+          
+          msgDiv.innerHTML = currentHTML;
+          i++;
+          
+          chatHistory.scrollTop = chatHistory.scrollHeight;
+          setTimeout(typeWriter, isTag ? 0 : 5);
+        } else {
+          resolve();
+        }
+      }
+      typeWriter(); 
+      
+    } else {
+      msgDiv.innerHTML = text;
+      setTimeout(() => {
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+        resolve();
+      }, 10);
+    }
+  });
+}
+
+// ── inicializar ───────────────────────────────────────────────────────────
+async function init() {
+  try {
+    const res  = await fetch('/api/preguntas');
+    const data = await res.json();
+    state.escala = data.escala;
+
+    data.interes.forEach(bloque => {
+      bloque.preguntas.forEach(p => {
+        state.preguntas.push({
+          id: p.id,
+          texto: p.texto,
+          modulo: 1,
+          moduloLabel: bloque.carrera,
+        });
+      });
+    });
+
+    data.tronco.forEach(p => {
+      state.preguntas.push({
+        id: p.id,
+        texto: p.texto,
+        modulo: 2,
+        moduloLabel: 'Habilidades generales',
+      });
+    });
+    state.tronco = data.tronco.map(p => p.id);
+    state.total  = state.preguntas.length;
+  } catch (error) {
+    console.error("Error cargando preguntas", error);
+    state.preguntas = [
+      { id: 'q1', texto: '¿Te gusta programar y resolver problemas de lógica?', modulo: 1, moduloLabel: 'Sistemas' },
+      { id: 'q2', texto: '¿Disfrutas diseñando circuitos o trabajando con hardware?', modulo: 1, moduloLabel: 'Mecatrónica' }
+    ];
+    state.total = state.preguntas.length;
+  }
+}
+
+// ── renderPregunta asíncrono para esperar al texto ─────────────────────
+const ETIQUETAS_ESCALA = ['', 'Desacuerdo\ntotal', 'En\ndesacuerdo', 'Neutral', 'De\nacuerdo', '¡Me\nencanta!'];
+
+async function renderPregunta() {
+  const q   = state.preguntas[state.cursor];
+  const num = state.cursor + 1;
+  const pct = Math.round((num / state.total) * 100);
+
+  $('prog-label').textContent = `Pregunta ${num} de ${state.total}`;
+  $('prog-pct').textContent   = `${pct}%`;
+  $('prog-fill').style.width  = `${pct}%`;
+
+  const moduloTitle = q.modulo === 1 ? `MÓDULO 1 · ${q.moduloLabel}` : `MÓDULO 2 · Tronco Común`;
+
+  $('answer-buttons').innerHTML = '';
+  await appendMessage(q.texto, 'bot', moduloTitle);
+
+  let btns = '';
+  for (let v = 1; v <= 5; v++) {
+    const desc = ETIQUETAS_ESCALA[v].replace('\n', '<br>');
+    btns += `<button class="q-btn" onclick="seleccionar(${v})">
+               <span class="q-val">${v}</span>
+               <span class="q-desc">${desc}</span>
+             </button>`;
+  }
+  
+  $('answer-buttons').innerHTML = btns;
+  
+  setTimeout(() => {
+    const chatHistory = $('chat-history');
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+  }, 10);
+}
+
+// ── Lógica de selección adaptada ───────────────────────────────────────
+async function seleccionar(val) {
+  const q = state.preguntas[state.cursor];
+  state.respuestas[q.id] = val;
+  
+  $('answer-buttons').innerHTML = '';
+  const textoRespuesta = ETIQUETAS_ESCALA[val].replace('\n', ' ');
+  await appendMessage(textoRespuesta, 'user');
+
+  setTimeout(async () => {
+    if (state.cursor < state.total - 1) {
+      state.cursor++;
+      renderPregunta(); 
+    } else {
+      await appendMessage("He terminado de recopilar tu información. Procesando resultados...", 'bot', "SISTEMA");
+      setTimeout(enviarDiagnostico, 600);
+    }
+  }, 500);
+}
+
+// ── Actualización del botón de inicio ──────────────────────────────────
+$('btn-start').addEventListener('click', async () => {
+  if (state.total === 0) await init();
+  state.cursor    = 0;
+  state.respuestas = {};
+  
+  $('chat-history').innerHTML = '';
+  showStep('step-quiz');
+  
+  await appendMessage("¡Hola! Soy el asistente virtual de OrientaTE. Te haré algunas preguntas para descubrir tu perfil ideal. Selecciona la opción que mejor represente cómo te sientes con cada afirmación.", 'bot', "BIENVENIDA");
+  
+  setTimeout(renderPregunta, 400);
+});
+
+$('btn-restart').addEventListener('click', () => {
+  state.cursor = 0;
+  state.respuestas = {};
+  showStep('step-home');
+});
+
+// ── enviar y mostrar resultados ───────────────────────────────────────────
+async function enviarDiagnostico() {
+  showStep('step-loading');
+
+  const respuestas_interes = {};
+  const respuestas_tronco  = {};
+
+  for (const [id, val] of Object.entries(state.respuestas)) {
+    if (state.tronco.includes(id)) respuestas_tronco[id]  = val;
+    else                           respuestas_interes[id] = val;
+  }
+
+  try {
+    const res  = await fetch('/api/diagnostico', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ respuestas_interes, respuestas_tronco }),
+    });
+    
+    if (!res.ok) throw new Error("Error en la respuesta");
+    const data = await res.json();
+    mostrarResultados(data);
+  } catch (e) {
+    console.warn("No se pudo conectar al API, mostrando datos mockeados.", e);
+    setTimeout(() => {
+      mostrarResultados({
+        puntajes: { "Ingeniería en Sistemas Computacionales": 85, "Ingeniería Mecatrónica": 60, "Ingeniería en Alimentos": 30, "Ingeniería Inteligencia Artificial": 40, "Ingeniería Ambiental": 15, "Ingeniería Metalúrgica": 10 },
+        carreras_ideales: ["Ingeniería en Sistemas Computacionales"],
+        consejo: "Muestras un alto interés en la lógica de programación y resolución de problemas algorítmicos. La Ingeniería en Sistemas Computacionales se ajusta perfectamente a tu perfil."
+      });
+    }, 1500);
+  }
+}
+
+// ── GRÁFICA DE RADAR (Chart.js) ───────────────────────────────────────────
+let radarChartInstance = null;
+
+function renderRadarChart(carreras, puntajes) {
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  
+  if (radarChartInstance) {
+    radarChartInstance.destroy();
+  }
+
+  window.currentRadarData = { carreras, puntajes };
+
+  const iconos = {
+    "Ingeniería en Sistemas Computacionales": "💻 Sistemas",
+    "Ingeniería Inteligencia Artificial": "🤖 IA",
+    "Ingeniería Mecatrónica": "⚙️ Mecatrónica",
+    "Ingeniería en Alimentos": "🍎 Alimentos",
+    "Ingeniería Ambiental": "🌱 Ambiental",
+    "Ingeniería Metalúrgica": "⚒️ Metalúrgica"
+  };
+
+  const labels = carreras.map(c => iconos[c] || c);
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  
+  const textColor = isDark ? '#E8EDF5' : '#1E293B';
+  const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+  const accentColor = isDark ? 'rgba(204, 61, 107, 1)' : 'rgba(109, 36, 62, 1)';
+  const accentBg = isDark ? 'rgba(204, 61, 107, 0.3)' : 'rgba(109, 36, 62, 0.3)';
+
+  radarChartInstance = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Afinidad Vocacional',
+        data: puntajes,
+        backgroundColor: accentBg,
+        borderColor: accentColor,
+        pointBackgroundColor: accentColor,
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: accentColor,
+        borderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: isDark ? 'rgba(26, 34, 54, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+          titleColor: accentColor,
+          bodyColor: textColor,
+          borderColor: accentColor,
+          borderWidth: 1,
+          padding: 12,
+          displayColors: false,
+          callbacks: {
+            label: function(context) {
+              return `Puntaje: ${context.raw} pts`;
+            }
+          }
+        }
+      },
+      scales: {
+        r: {
+          angleLines: { color: gridColor },
+          grid: { color: gridColor },
+          pointLabels: {
+            color: textColor,
+            font: { family: "'Space Grotesk', sans-serif", size: 12, weight: '500' }
+          },
+          ticks: {
+            display: false,
+            beginAtZero: true
+          }
+        }
+      }
+    }
+  });
+}
+
+function mostrarResultados(data) {
+  const { puntajes, carreras_ideales, consejo } = data;
+  showStep('step-results');
+
+  if (!carreras_ideales) {
+    $('res-title').textContent    = 'Perfil no concluyente';
+    $('res-subtitle').textContent = 'Tus respuestas no nos permiten identificar una carrera dominante. Quizás tu carrera ideal no está aún en la oferta de UPIIZ.';
+    $('winner-cards').innerHTML   = '';
+  } else if (carreras_ideales.length === 1) {
+    $('res-title').innerHTML   = `Tu carrera ideal es <span style="color:var(--accent)">${carreras_ideales[0]}</span>`;
+    $('res-subtitle').textContent = '¡Tienes un perfil muy definido! El motor de inferencia identificó una carrera con ventaja clara.';
+  } else {
+    $('res-title').textContent    = '¡Tienes un perfil híbrido!';
+    $('res-subtitle').textContent = 'Destacas en varias áreas con el mismo puntaje. Todas estas opciones encajan contigo.';
+  }
+
+  if (carreras_ideales) {
+    $('winner-cards').innerHTML = carreras_ideales.map(c => `
+      <div class="winner-card">
+        <div class="winner-tag">▲ CARRERA IDEAL</div>
+        <div class="winner-name">${c}</div>
+      </div>`).join('');
+  }
+
+  if (consejo) {
+    $('consejo-text').textContent = consejo;
+    $('consejo-box').style.display = 'block';
+  } else {
+    $('consejo-box').style.display = 'none';
+  }
+
+  const maxPts = Math.max(...Object.values(puntajes), 1);
+  const sorted = Object.entries(puntajes).sort((a, b) => b[1] - a[1]);
+
+  $('score-bars').innerHTML = sorted.map(([carrera, pts]) => `
+    <div class="score-row">
+      <span class="score-label">${carrera}</span>
+      <div class="score-track">
+        <div class="score-bar" data-pct="${Math.round((pts / maxPts) * 100)}"></div>
+      </div>
+      <span class="score-val">${pts} pt${pts !== 1 ? 's' : ''}</span>
+    </div>`).join('');
+
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.score-bar').forEach(bar => {
+      setTimeout(() => { bar.style.width = bar.dataset.pct + '%'; }, 100);
+    });
+  });
+
+  // Renderizar la gráfica de radar con Chart.js
+  const carrerasParaRadar = sorted.map(item => item[0]);
+  const puntajesParaRadar = sorted.map(item => item[1]);
+  renderRadarChart(carrerasParaRadar, puntajesParaRadar);
+}
+</script>
+</body>
+</html>
